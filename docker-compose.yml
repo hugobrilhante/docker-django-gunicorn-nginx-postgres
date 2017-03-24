@@ -1,0 +1,27 @@
+version: '2'
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/myproject
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - django
+
+  django:
+    build: .
+    image: myproject
+    command: gunicorn myproject.wsgi -c ./gunicorn/gunicorn.py -b 0.0.0.0:8000
+    depends_on:
+      - db
+    volumes:
+      - .:/myproject
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres
+    env_file:
+      - .env
